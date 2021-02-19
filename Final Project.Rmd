@@ -1,0 +1,90 @@
+---
+title: "Final Project"
+author: "Joe Celebrezze"
+date: "2/12/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include = FALSE}
+localflam <- read.csv("flamdata.csv")
+library(gapminder)
+library(ggplot2)
+library(car)
+library(multcomp)
+library(tidyverse)
+library(naniar)
+```
+
+```{r}
+lfm_bins <- function(data) {
+  if(data > 20 && data < 40) {
+    return("1")}
+  if(data > 40 &&  data <  60) {
+    return("2") }
+  if(data > 60 &&  data <  80) {
+    return("3") }
+  if(data > 80 &&  data <  100) {
+    return("4") }
+  if(data > 100 &&  data <  120) {
+    return("5") }
+  if(data > 120 &&  data <  140) {
+    return("6") }
+  if(data > 140 &&  data <  160) {
+    return("7") }
+  if(data > 160 &&  data <  180) {
+    return("8") }
+  if(data > 180 &&  data <  200) {
+    return("9") }
+  if(data > 200 &&  data <  220) {
+    return("10") }
+  if(data > 220 &&  data <  240) {
+    return("11") }
+  if(data > 240 &&  data <  260) {
+    return("12") }
+  if(data > 260 &&  data <  280) {
+    return("13") }
+  if(data > 280 &&  data <  300) {
+    return("14") }
+}
+
+localflam$lfm2 <- lfm_bins(localflam$lfm)
+localflam$lfm2
+```
+
+```{r}
+#Since the dataset is pretty raw, going to need to mess with it a decent amount
+localflam2 <- localflam #Creating a copy
+localflam2 <- localflam2 %>% #To bin the LFM's to visualize data with boxplot
+  mutate(bins = case_when(
+    between(localflam2$lfm, 20, 40) ~ '1',
+    between(localflam2$lfm, 40, 60) ~ '2',
+    between(localflam2$lfm, 60, 80) ~ '3',
+    between(localflam2$lfm, 80, 100) ~ '4',
+    between(localflam2$lfm, 100, 120) ~ '5',
+    between(localflam2$lfm, 120, 140) ~ '6',
+    between(localflam2$lfm, 140, 160) ~ '7',
+    between(localflam2$lfm, 160, 180) ~ '8',
+    between(localflam2$lfm, 180, 200) ~ '9',
+    between(localflam2$lfm, 200, 220) ~ '10',
+    between(localflam2$lfm, 220, 240) ~ '11',
+    between(localflam2$lfm, 240, 260) ~ '12',
+    between(localflam2$lfm, 260, 280) ~ '13',
+    between(localflam2$lfm, 280, 300) ~ '14',
+  ))
+
+localflam2.ignite <- subset(localflam2, subset = ignition == 1)
+  
+binsorder <- factor(localflam2.ignite, levels = c('1','2','3','4','5','6','7','8','9','10','11','12','13','14'))
+  
+str(localflam2)
+```
+
+```{r}
+ggplot(localflam2.ignite, aes(x = bins, y = tti)) +
+  geom_boxplot()
+```
+
